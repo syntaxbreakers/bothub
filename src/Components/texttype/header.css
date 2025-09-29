@@ -1,0 +1,19 @@
+.header-title {
+  font-size: 3rem !important;
+  font-weight: 700 !important;
+  margin-bottom: 0.5rem !important;
+  line-height: 1.2 !important;
+  color: #ffffff !important;
+}
+
+.header-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .header-title {
+    font-size: 2.5rem !important;
+  }
+}
