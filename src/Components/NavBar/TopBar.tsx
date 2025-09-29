@@ -1,6 +1,6 @@
 import { Grid } from '@mui/material'
 import PillNav from '../NavBar/PillNav'
-import logo from '../../../public/logo.png'
+import logo from '../../assets/icon.png'
 
 function TopBar() {
   return (
