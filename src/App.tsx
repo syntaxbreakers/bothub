@@ -1,49 +1,51 @@
 import './App.css'
-import Card from './Components/BlackCard/Card'
-import { Grid } from '@mui/material'
+import { Box, Container } from '@mui/material'
 import Header from './Components/texttype/header'
 import TopBar from './Components/NavBar/TopBar'
 import Outlined from './Components/Button/outlined'
-import Footer from './Components/Footer/Footer'
-function App() {
+import Threads from './Components/ThreadsBackground/Threads'
 
+function App() {
   return (
     <div className="App">
-      <Card>
-        <Grid 
-          container 
+      <Threads/>
+      <div className="content">
+        <Container 
+          maxWidth="lg" 
           sx={{ 
-            minHeight: '100vh',
+            height: '100%',
             display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'space-between'
+            flexDirection: 'column'
           }}
         >
-          <Grid container sx={{ flexGrow: 1, justifyContent: "center", alignItems: "flex-start", flexDirection: "column" }}>
-            <Grid sx={{ width: '100%' }}>
-              <TopBar/>
-            </Grid>
-            <Grid sx={{ mt: '20vh', width: '100%' }}>
-              <Header/>
-            </Grid>
-            <Grid sx={{ 
-              mt: '10vh', 
-              width: '100%',
+          <TopBar />
+
+          <Box
+            sx={{
+              flex: 1,
               display: 'flex',
-              justifyContent: 'center'
-            }}>
-              <Outlined/>
-            </Grid>
-          </Grid>
-          <Grid sx={{ width: '100%', mt: 'auto' }}>
-            <Footer />
-          </Grid>
-        </Grid>
-        
-      </Card>
-      
+              flexDirection: 'column',
+              justifyContent: 'center',
+              alignItems: 'center',
+              gap: { xs: 3, md: 4 },
+              my: 'auto'
+            }}
+          >
+            <Header />
+            
+            <Box 
+              sx={{ 
+                display: 'flex', 
+                gap: 2,
+                flexDirection: { xs: 'column', sm: 'row' }
+              }}
+            >
+              <Outlined />
+            </Box>
+          </Box>
+        </Container>
+      </div>
     </div>
   )
 }
-
 export default App

@@ -1,14 +1,13 @@
 .pill-nav-container {
-  position: absolute;
-  top: 1em;
-  z-index: 99;
+  display: flex;
   justify-content: center;
+  width: 100%;
+  z-index: 99;
 }
 
 @media (max-width: 768px) {
   .pill-nav-container {
-    width: 100%;
-    left: 0;
+    padding: 0 1rem;
   }
 }
 
@@ -21,6 +20,8 @@
   display: flex;
   align-items: center;
   box-sizing: border-box;
+  font-family: var(--font-body);
+  font-weight: 500;
 }
 
 @media (max-width: 768px) {
