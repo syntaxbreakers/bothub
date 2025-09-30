@@ -2,7 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom"
 import TopBar from "../Components/NavBar/TopBar"
 import Threads from "../Components/ThreadsBackground/Threads"
 import Legal from "../Pages/Legal/Legal"
-import { AboutUs } from "../Pages/Aboutus/AboutUs"
+import AboutUs from "../Pages/Aboutus/AboutUs"
 import Home from "../Pages/Home/Home"
 
 export const NavBarRoutes = () => {

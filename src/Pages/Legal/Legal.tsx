@@ -1,4 +1,3 @@
-import React from 'react';
 import './GlassCard.css';
 import GavelIcon from '@mui/icons-material/Gavel';
 import CopyrightIcon from '@mui/icons-material/Copyright';
