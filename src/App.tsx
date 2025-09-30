@@ -12,10 +12,13 @@ function App() {
       <div className="content">
         <Container 
           maxWidth="lg" 
+          disableGutters
           sx={{ 
             height: '100%',
             display: 'flex',
-            flexDirection: 'column'
+            flexDirection: 'column',
+            alignItems: 'center',
+            px: { xs: 2, sm: 3, md: 4 }
           }}
         >
           <TopBar />
