@@ -7,6 +7,8 @@ export type PillNavItem = {
   label: string;
   href: string;
   ariaLabel?: string;
+  target?: '_blank' | '_self' | '_parent' | '_top';
+  rel?: string;
 };
 
 export interface PillNavProps {
@@ -308,6 +310,8 @@ const PillNav: React.FC<PillNavProps> = ({
                     aria-label={item.ariaLabel || item.label}
                     onMouseEnter={() => handleEnter(i)}
                     onMouseLeave={() => handleLeave(i)}
+                    target={item.target}
+                    rel={item.target === '_blank' ? item.rel || 'noopener noreferrer' : undefined}
                   >
                     <span
                       className="hover-circle"

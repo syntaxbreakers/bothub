@@ -40,18 +40,26 @@ h1, h2, h3, h4, h5, h6 {
   flex-direction: column;
   align-items: center;
   padding: 0;
+  overflow-y: auto; /* Enable scrolling */
+  overflow-x: hidden;
 }
 
-@media (max-width: 600px) {
-  .content {
-    padding: 1rem;
-  }
+/* Custom scrollbar for content */
+.content::-webkit-scrollbar {
+  width: 8px;
 }
 
-@media (min-width: 601px) {
-  .content {
-    padding: 2rem;
-  }
+.content::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.content::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+}
+
+.content::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
 }
 
 body {

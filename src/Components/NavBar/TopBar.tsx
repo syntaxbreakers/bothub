@@ -1,8 +1,10 @@
 import { Box } from '@mui/material'
+import { useLocation } from 'react-router-dom'
 import PillNav from '../NavBar/PillNav'
 import logo from '../../assets/icon.png'
 
 function TopBar() {
+  const location = useLocation();
   return (
     <Box
       component="nav"
@@ -17,12 +19,12 @@ function TopBar() {
         logo={logo}
         logoAlt="Company Logo"
         items={[
-          { label: 'Home', href: '/' },
-          { label: 'About us', href: '/about' },
-          { label: 'Legal', href: '/legal' },
-          { label: 'Discord', href: '/discord' }
+          { label: 'Home', href: '/bothub' },
+          { label: 'Legal', href: '/bothub/legal' },
+          { label: 'About us', href: '/bothub/aboutus' },
+          { label: 'Discord', href: 'https://discord.gg/auSWzxZZpa', target: '_blank'}
         ]}
-        activeHref="/"
+        activeHref={location.pathname}
         className="custom-nav"
         ease="power2.easeOut"
         baseColor="#000000"

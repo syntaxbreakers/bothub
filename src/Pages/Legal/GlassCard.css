@@ -1,0 +1,71 @@
+.glass-card {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px;
+  padding: 3rem;
+  width: 90%;
+  max-width: 1400px;
+  margin: 6rem auto 2rem auto;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  position: relative;
+  /* Removed overflow and max-height - card will expand naturally */
+}
+
+.glass-card__title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  color: #ffffff;
+  font-family: var(--font-heading);
+  text-align: center;
+}
+
+.glass-card__content {
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.8;
+  font-size: 1rem;
+}
+
+.glass-card__section {
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.glass-card__section-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: #ffffff;
+  font-family: var(--font-heading);
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .glass-card {
+    width: 95%;
+    padding: 2rem 1.5rem;
+    border-radius: 16px;
+    margin: 5rem auto 2rem auto;
+  }
+
+  .glass-card__title {
+    font-size: 2rem;
+  }
+
+  .glass-card__section-title {
+    font-size: 1.25rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .glass-card {
+    padding: 1.5rem 1rem;
+    margin: 4rem auto 1rem auto;
+  }
+
+  .glass-card__title {
+    font-size: 1.75rem;
+  }
+}

@@ -10,10 +10,21 @@
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  align-items: center;
+  justify-content: flex-start;
+  text-align: center;
+  width: 100%;
+  padding: 3rem 1rem;
+  position: relative;
+  z-index: 10; /* Ensure it's above other elements */
 }
 
 @media (max-width: 768px) {
   .header-title {
     font-size: 2.5rem !important;
+  }
+  
+  .header-container {
+    padding: 2rem 1rem;
   }
 }

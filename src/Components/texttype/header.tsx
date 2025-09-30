@@ -25,16 +25,16 @@ Header() {
           onLetterAnimationComplete={handleAnimationComplete}
         />
       </Box>
-      <Box sx={{ mt: { xs: 2, md: 3 } }}>
-        <TextType
-          text={["For all your bot needs!", "Custom bots!", 
-            "Best prices in market!","Best quality guaranteed!"
-          ,"Scam insurance policy*!"]}
-          typingSpeed={75}
-          pauseDuration={1500}
-          showCursor={true}
-          cursorCharacter="_" />
-      </Box>
+      <Box sx={{ mt: { xs: 2, md: 3 } }} className="header-subtitle-box">
+  <TextType
+    text={["For all your bot needs!", "Custom bots!", 
+      "Best prices in market!","Best quality guaranteed!"
+    ,"Scam insurance policy*!"]}
+    typingSpeed={75}
+    pauseDuration={1500}
+    showCursor={true}
+    cursorCharacter="_" />
+</Box>
     </div>
   )
 }
