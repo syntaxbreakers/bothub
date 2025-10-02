@@ -10,7 +10,6 @@
   margin: 6rem auto 2rem auto;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   position: relative;
-  /* Removed overflow and max-height - card will expand naturally */
 }
 
 .glass-card__title {
@@ -29,17 +28,19 @@
 }
 
 .glass-card__section {
-  margin-bottom: 2rem;
-  text-align: center;
+  margin-bottom: 3rem;
+  text-align: left; /* Changed from center to left */
 }
 
 .glass-card__section-title {
-  font-size: 1.5rem;
+  font-size: 1.75rem; /* Reduced from 2.5rem */
   font-weight: 600;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
   color: #ffffff;
   font-family: var(--font-heading);
   text-align: center;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.2); /* Add separator line */
 }
 
 @media (max-width: 768px) {
@@ -55,7 +56,7 @@
   }
 
   .glass-card__section-title {
-    font-size: 1.25rem;
+    font-size: 1.5rem;
   }
 }
 
@@ -68,4 +69,101 @@
   .glass-card__title {
     font-size: 1.75rem;
   }
+
+  .glass-card__section-title {
+    font-size: 1.25rem;
+  }
+}
+
+.glass-card__markdown {
+  line-height: 1.8;
+  text-align: left;
+}
+
+.glass-card__markdown p {
+  margin-bottom: 1rem;
+  text-align: left;
+}
+
+.glass-card__markdown h1 {
+  font-size: 1.75rem;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  font-weight: 600;
+  text-align: left;
+  color: #ffffff;
+}
+
+.glass-card__markdown h2 {
+  font-size: 1.5rem;
+  margin-top: 1.75rem;
+  margin-bottom: 1rem;
+  font-weight: 600;
+  text-align: left;
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.glass-card__markdown h3 {
+  font-size: 1.25rem;
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+  font-weight: 600;
+  text-align: left;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.glass-card__markdown ul,
+.glass-card__markdown ol {
+  margin-bottom: 1rem;
+  padding-left: 1.5rem;
+  text-align: left;
+  list-style-position: outside;
+}
+
+.glass-card__markdown li {
+  margin-bottom: 0.75rem;
+  text-align: left;
+  line-height: 1.6;
+}
+
+.glass-card__markdown strong {
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.glass-card__markdown a {
+  color: rgba(100, 200, 255, 0.9);
+  text-decoration: underline;
+  transition: color 0.2s ease;
+}
+
+.glass-card__markdown a:hover {
+  color: rgba(150, 220, 255, 1);
+}
+
+.glass-card__markdown code {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 0.2rem 0.4rem;
+  border-radius: 3px;
+  font-family: monospace;
+  font-size: 0.9em;
+}
+
+.glass-card__markdown blockquote {
+  border-left: 3px solid rgba(255, 255, 255, 0.3);
+  padding-left: 1rem;
+  margin-left: 0;
+  margin-bottom: 1rem;
+  font-style: italic;
+  text-align: left;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* Better spacing for nested lists */
+.glass-card__markdown ul ul,
+.glass-card__markdown ol ol,
+.glass-card__markdown ul ol,
+.glass-card__markdown ol ul {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
 }
