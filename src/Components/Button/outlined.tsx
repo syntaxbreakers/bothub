@@ -2,8 +2,19 @@ import { Stack } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add'
 import BoltIcon from '@mui/icons-material/Bolt'
 import './GlassButton.css'
+import { useNavigate } from 'react-router'
 
 function Outlined() {
+
+  const navigate = useNavigate()
+
+  const handleCommissionClick = () => {
+    navigate('/commission')
+  }
+
+  const handleDeveloperClick = () => {
+    navigate('/on-boarding')
+  }
   return (
     <Stack 
       spacing={{ xs: 1.5, sm: 2 }} 
@@ -14,11 +25,11 @@ function Outlined() {
         mx: 'auto'
       }}
     >
-      <button className="glass-button glass-button--primary">
+      <button className="glass-button glass-button--primary" onClick={handleCommissionClick}>
         <AddIcon />
         Commission a bot
       </button>
-      <button className="glass-button glass-button--secondary">
+      <button className="glass-button glass-button--secondary" onClick={handleDeveloperClick}>
         <BoltIcon />
         Become a developer
       </button>

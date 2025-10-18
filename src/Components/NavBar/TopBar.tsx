@@ -19,9 +19,9 @@ function TopBar() {
         logo={logo}
         logoAlt="Company Logo"
         items={[
-          { label: 'Home', href: '/bothub' },
-          { label: 'Legal', href: '/bothub/legal' },
-          { label: 'About us', href: '/bothub/aboutus' },
+          { label: 'Home', href: '/' },
+          { label: 'Legal', href: '/legal' },
+          { label: 'About us', href: '/aboutus' },
           { label: 'Discord', href: 'https://discord.gg/auSWzxZZpa', target: '_blank'}
         ]}
         activeHref={location.pathname}
