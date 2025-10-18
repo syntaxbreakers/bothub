@@ -9,6 +9,7 @@ import {
   FormGroup,
   FormControlLabel,
   Checkbox,
+  CircularProgress,
 } from '@mui/material';
 import PersonIcon from '@mui/icons-material/Person';
 import CodeIcon from '@mui/icons-material/Code';
@@ -53,6 +54,7 @@ interface DeveloperFormData {
 }
 
 function Developer() {
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState<DeveloperFormData>({
     discordUsername: '',
     legalName: '',
@@ -101,9 +103,121 @@ function Developer() {
     setFormData({ ...formData, [field]: e.target.checked });
   };
 
-  const handleSubmit = () => {
-    console.log('Developer form submitted:', formData);
-    alert('Application submitted successfully!');
+  const handleSubmit = async () => {
+    setIsSubmitting(true);
+
+    try {
+      const webhookUrl = 'https://discord.com/api/webhooks/1429176838244007936/XbWLHHNcCTxtNDzKp1E1qdNqEs-Gk5yFiBoCEIvNMM30EkaN-vsMtmeMoGRbI8RmIwiz';
+
+      // Get selected languages
+      const selectedLanguages = Object.entries(formData.languages)
+        .filter(([_, selected]) => selected)
+        .map(([lang]) => {
+          const langMap: { [key: string]: string } = {
+            javascript: 'JavaScript',
+            typescript: 'TypeScript',
+            python: 'Python',
+            java: 'Java',
+            csharp: 'C#',
+            go: 'Go',
+            rust: 'Rust',
+            other: 'Other',
+          };
+          return langMap[lang];
+        })
+        .join(', ');
+
+      // Format introduction for better display
+      const formattedIntroduction = formData.introduction.length > 1024 
+        ? formData.introduction.substring(0, 1021) + '...' 
+        : formData.introduction;
+
+      // Create a rich embed message
+      const embed = {
+        title: '👨‍💻 New Developer Application',
+        color: 0x00FF00, // Green color for developer applications
+        timestamp: new Date().toISOString(),
+        fields: [
+          {
+            name: '👤 Contact Information',
+            value: `**Discord Username:** ${formData.discordUsername}\n**Legal Name:** ${formData.legalName}\n**Email:** ${formData.email}\n**Alternate Contact:** ${formData.alternateContact || 'N/A'}`,
+            inline: false,
+          },
+          {
+            name: '📝 Introduction',
+            value: formattedIntroduction || 'No introduction provided',
+            inline: false,
+          },
+          {
+            name: '💻 Programming Languages',
+            value: selectedLanguages || 'None selected',
+            inline: false,
+          },
+          {
+            name: '🌍 Location',
+            value: `${formData.addressLine1}\n${formData.city}, ${formData.state}\n${formData.country} - ${formData.pincode}`,
+            inline: false,
+          },
+        ],
+        footer: {
+          text: 'Developer Application System',
+        },
+        thumbnail: {
+          url: 'https://cdn.discordapp.com/attachments/774527605096841246/1429177260853690530/jean.png',
+        },
+      };
+
+      const response = await fetch(webhookUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username: 'Cool Bot',
+          avatar_url: 'https://cdn.discordapp.com/attachments/774527605096841246/1429177260853690530/jean.png',
+          embeds: [embed],
+        }),
+      });
+
+      if (response.ok) {
+        alert('✅ Application submitted successfully! We will review your application and contact you soon.');
+        
+        // Reset form
+        setFormData({
+          discordUsername: '',
+          legalName: '',
+          email: '',
+          alternateContact: '',
+          introduction: '',
+          languages: {
+            javascript: false,
+            typescript: false,
+            python: false,
+            java: false,
+            csharp: false,
+            go: false,
+            rust: false,
+            other: false,
+          },
+          addressLine1: '',
+          country: '',
+          city: '',
+          state: '',
+          pincode: '',
+          agreeToTerms: false,
+        });
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else {
+        const errorData = await response.text();
+        console.error('Discord webhook error:', errorData);
+        alert('❌ Submission failed. Please try again or contact support.');
+      }
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      alert('❌ An error occurred while submitting the application. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   // Check if at least one language is selected
@@ -401,7 +515,7 @@ function Developer() {
           <Button
             variant="contained"
             onClick={handleSubmit}
-            disabled={!isFormValid}
+            disabled={!isFormValid || isSubmitting}
             sx={{
               borderRadius: '16px',
               bgcolor: 'rgba(255,255,255,0.9)',
@@ -417,7 +531,14 @@ function Developer() {
               },
             }}
           >
-            Submit Application
+            {isSubmitting ? (
+              <>
+                <CircularProgress size={20} sx={{ mr: 1, color: '#000' }} />
+                Submitting...
+              </>
+            ) : (
+              'Submit Application'
+            )}
           </Button>
         </Box>
       </Box>

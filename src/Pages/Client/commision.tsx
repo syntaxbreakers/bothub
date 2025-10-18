@@ -10,6 +10,7 @@ import {
   MenuItem,
   FormControl,
   InputLabel,
+  CircularProgress,
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
@@ -52,6 +53,7 @@ interface FormData {
 
 function Commission() {
   const [step, setStep] = useState(1);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState<FormData>({
     discordUsername: '',
     legalName: '',
@@ -95,10 +97,124 @@ function Commission() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handleSubmit = () => {
-    // Handle form submission
-    console.log('Form submitted:', formData);
-    alert('Form submitted successfully!');
+  const handleSubmit = async () => {
+    setIsSubmitting(true);
+
+    try {
+      const totals = calculateTotal();
+      const webhookUrl = 'https://discord.com/api/webhooks/1429171990408724664/OsBCHkQ6jl9NUNLROQqT85ukZBGAGwvsdDP4WKjAxTbS7ewXuaL8ZeV6LdclyEP13qnc';
+
+      // Format the feature list for better display
+      const formattedFeatures = formData.featureList
+        ? formData.featureList.split('\n').filter(line => line.trim()).join('\n')
+        : 'No features specified';
+
+      const mediaRequestDisplay = {
+        '': 'None',
+        'pfp': 'Profile Picture',
+        'banner': 'Banner',
+        'both': 'Both (PFP & Banner)'
+      }[formData.mediaRequest] || 'None';
+
+      // Create a rich embed message
+      const embed = {
+        title: '🤖 New Bot Commission Request',
+        color: 0x5865F2, // Discord blurple color
+        timestamp: new Date().toISOString(),
+        fields: [
+          {
+            name: '👤 Contact Information',
+            value: `**Discord Username:** ${formData.discordUsername}\n**Legal Name:** ${formData.legalName}\n**Email:** ${formData.email}\n**Alternate Contact:** ${formData.alternateContact || 'N/A'}`,
+            inline: false,
+          },
+          {
+            name: '🤖 Bot Information',
+            value: `**Bot Name:** ${formData.botName}\n**Description:** ${formData.botDescription}\n}`,
+            inline: false,
+          },
+          {
+            name: '🎨 Media Request',
+            value: mediaRequestDisplay,
+            inline: false,
+          },
+          {
+            name: '📋 Feature List',
+            value: formattedFeatures.length > 1024 ? formattedFeatures.substring(0, 1021) + '...' : formattedFeatures,
+            inline: false,
+          },
+          {
+            name: '🏠 Billing Address',
+            value: `${formData.addressLine1}\n${formData.city}, ${formData.state}\n${formData.country} - ${formData.pincode}`,
+            inline: false,
+          },
+          {
+            name: '💰 Payment Details',
+            value: `**Base Amount:** $${totals.baseAmount.toFixed(2)}\n${formData.scamInsurance ? `**Scam Insurance:** +$${totals.insurance.toFixed(2)}\n` : ''
+              }**Platform Fee:** +$${totals.platformFee.toFixed(2)}\n**GST & Tax (18%):** +$${totals.tax.toFixed(2)}`,
+            inline: true,
+          },
+          {
+            name: '💵 Total Amount',
+            value: `**$${totals.total.toFixed(2)} USD**`,
+            inline: true,
+          },
+        ],
+        footer: {
+          text: 'Bot Commission System',
+        },
+        thumbnail: {
+          url: 'https://cdn.discordapp.com/attachments/774527605096841246/1429173807930933288/Ambot.gif', // Optional: Add your bot icon URL
+        },
+      };
+
+      const response = await fetch(webhookUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username: 'Ambot',
+          avatar_url: 'https://cdn.discordapp.com/attachments/774527605096841246/1429173807930933288/Ambot.gif',
+          embeds: [embed],
+        }),
+      });
+
+      if (response.ok) {
+        alert('✅ Form submitted successfully! We will contact you soon via Discord or email.');
+
+        // Reset form
+        setFormData({
+          discordUsername: '',
+          legalName: '',
+          email: '',
+          alternateContact: '',
+          botName: '',
+          botDescription: '',
+          attachments: null,
+          mediaRequest: '',
+          featureList: '',
+          addressLine1: '',
+          country: '',
+          city: '',
+          state: '',
+          pincode: '',
+          amount: 30,
+          scamInsurance: false,
+          agreeToTerms: false,
+        });
+        setStep(1);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else {
+        const errorData = await response.text();
+        console.error('Discord webhook error:', errorData);
+        alert('❌ Submission failed. Please try again or contact support.');
+      }
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      alert('❌ An error occurred while submitting the form. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const calculateTotal = () => {
@@ -147,312 +263,329 @@ function Commission() {
           }}
         >
           <BackButton to="/" tooltip="Back to Home" />
-          </Box>
-          <Typography
-            variant="h3"
-            component="h1"
-            className="glass-card__title"
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: '#fff',
-              mb: 4,
-              gap: 1,
-            }}
-          >
-            <SmartToyIcon fontSize="large" />
-            Commission a Bot
-          </Typography>
+        </Box>
+        <Typography
+          variant="h3"
+          component="h1"
+          className="glass-card__title"
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: '#fff',
+            mb: 4,
+            gap: 1,
+          }}
+        >
+          <SmartToyIcon fontSize="large" />
+          Commission a Bot
+        </Typography>
 
-          <Box className="glass-card__content">
-            {step === 1 && (
-              <>
-                {/* Contact Details */}
-                <FormSection title="Contact Details" icon={<PersonIcon />}>
-                  <FormInput
-                    label="Discord Username"
-                    required
-                    value={formData.discordUsername}
-                    onChange={handleInputChange('discordUsername')}
-                  />
-                  <FormInput
-                    label="Legal Name"
-                    required
-                    value={formData.legalName}
-                    onChange={handleInputChange('legalName')}
-                  />
-                  <FormInput
-                    label="Email Address"
-                    required
-                    type="email"
-                    value={formData.email}
-                    onChange={handleInputChange('email')}
-                  />
-                  <FormInput
-                    label="Alternate Way to Contact"
-                    value={formData.alternateContact}
-                    onChange={handleInputChange('alternateContact')}
-                  />
-                </FormSection>
+        <Box className="glass-card__content">
+          {step === 1 && (
+            <>
+              {/* Contact Details */}
+              <FormSection title="Contact Details" icon={<PersonIcon />}>
+                <FormInput
+                  label="Discord Username"
+                  required
+                  value={formData.discordUsername}
+                  onChange={handleInputChange('discordUsername')}
+                />
+                <FormInput
+                  label="Legal Name"
+                  required
+                  value={formData.legalName}
+                  onChange={handleInputChange('legalName')}
+                />
+                <FormInput
+                  label="Email Address"
+                  required
+                  type="email"
+                  value={formData.email}
+                  onChange={handleInputChange('email')}
+                />
+                <FormInput
+                  label="Alternate Way to Contact"
+                  value={formData.alternateContact}
+                  onChange={handleInputChange('alternateContact')}
+                />
+              </FormSection>
 
-                {/* Bot Details */}
-                <FormSection title="Bot Details" icon={<SmartToyIcon />}>
-                  <FormInput
-                    label="Name Your Bot"
-                    required
-                    value={formData.botName}
-                    onChange={handleInputChange('botName')}
-                  />
-                  <FormTextArea
-                    label="Describe Your Bot (give a brief description)"
-                    required
-                    rows={4}
-                    value={formData.botDescription}
-                    onChange={handleInputChange('botDescription')}
-                  />
-                  <FormControl fullWidth sx={{ mb: 2.5 }}>
-                    <InputLabel
-                      sx={{
-                        color: 'rgba(255,255,255,0.7)',
-                        '&.Mui-focused': {
-                          color: 'rgba(255,255,255,0.9)',
-                        },
-                      }}
-                    >
-                      Request PFP or Banner
-                    </InputLabel>
-                    <Select
-                      value={formData.mediaRequest}
-                      onChange={(e) => setFormData({ ...formData, mediaRequest: e.target.value })}
-                      sx={{
+              {/* Bot Details */}
+              <FormSection title="Bot Details" icon={<SmartToyIcon />}>
+                <FormInput
+                  label="Name Your Bot"
+                  required
+                  value={formData.botName}
+                  onChange={handleInputChange('botName')}
+                />
+                <FormTextArea
+                  label="Describe Your Bot (give a brief description)"
+                  required
+                  rows={4}
+                  value={formData.botDescription}
+                  onChange={handleInputChange('botDescription')}
+                />
+                <FormControl fullWidth sx={{ mb: 2.5 }}>
+                  <InputLabel
+                    sx={{
+                      color: 'rgba(255,255,255,0.7)',
+                      '&.Mui-focused': {
+                        color: 'rgba(255,255,255,0.9)',
+                      },
+                    }}
+                  >
+                    Request PFP or Banner
+                  </InputLabel>
+                  <Select
+                    value={formData.mediaRequest}
+                    onChange={(e) => setFormData({ ...formData, mediaRequest: e.target.value })}
+                    sx={{
+                      color: '#fff',
+                      borderRadius: '16px',
+                      '& .MuiOutlinedInput-notchedOutline': {
+                        borderColor: 'rgba(255,255,255,0.3)',
+                      },
+                      '&:hover .MuiOutlinedInput-notchedOutline': {
+                        borderColor: 'rgba(255,255,255,0.5)',
+                      },
+                      '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                        borderColor: 'rgba(255,255,255,0.7)',
+                      },
+                      '& .MuiSvgIcon-root': {
                         color: '#fff',
-                        borderRadius: '16px',
-                        '& .MuiOutlinedInput-notchedOutline': {
-                          borderColor: 'rgba(255,255,255,0.3)',
-                        },
-                        '&:hover .MuiOutlinedInput-notchedOutline': {
-                          borderColor: 'rgba(255,255,255,0.5)',
-                        },
-                        '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                          borderColor: 'rgba(255,255,255,0.7)',
-                        },
-                        '& .MuiSvgIcon-root': {
-                          color: '#fff',
-                        },
-                      }}
-                    >
-                      <MenuItem value="">None</MenuItem>
-                      <MenuItem value="pfp">Profile Picture</MenuItem>
-                      <MenuItem value="banner">Banner</MenuItem>
-                      <MenuItem value="both">Both</MenuItem>
-                    </Select>
-                  </FormControl>
-                  <FormTextArea
-                    label="Feature List (commands and names)"
-                    rows={6}
-                    value={formData.featureList}
-                    onChange={handleInputChange('featureList')}
-                    placeholder="Example:&#10;/help - Shows help menu&#10;/ping - Check bot latency&#10;/info - Bot information"
-                  />
-                </FormSection>
+                      },
+                    }}
+                  >
+                    <MenuItem value="">None</MenuItem>
+                    <MenuItem value="pfp">Profile Picture</MenuItem>
+                    <MenuItem value="banner">Banner</MenuItem>
+                    <MenuItem value="both">Both</MenuItem>
+                  </Select>
+                </FormControl>
+                <FormTextArea
+                  label="Feature List (commands and names)"
+                  rows={6}
+                  value={formData.featureList}
+                  onChange={handleInputChange('featureList')}
+                  placeholder="Example:&#10;/help - Shows help menu&#10;/ping - Check bot latency&#10;/info - Bot information"
+                />
+              </FormSection>
 
-                {/* Billing Address */}
-                <FormSection title="Billing Address" icon={<HomeIcon />}>
+              {/* Billing Address */}
+              <FormSection title="Billing Address" icon={<HomeIcon />}>
+                <FormInput
+                  label="Address Line 1"
+                  required
+                  value={formData.addressLine1}
+                  onChange={handleInputChange('addressLine1')}
+                />
+                <FormInput
+                  label="Country"
+                  required
+                  value={formData.country}
+                  onChange={handleInputChange('country')}
+                />
+                <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ mb: 2.5 }}>
                   <FormInput
-                    label="Address Line 1"
+                    label="City"
                     required
-                    value={formData.addressLine1}
-                    onChange={handleInputChange('addressLine1')}
+                    value={formData.city}
+                    onChange={handleInputChange('city')}
                   />
                   <FormInput
-                    label="Country"
+                    label="State"
                     required
-                    value={formData.country}
-                    onChange={handleInputChange('country')}
+                    value={formData.state}
+                    onChange={handleInputChange('state')}
                   />
-                  <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ mb: 2.5 }}>
-                    <FormInput
-                      label="City"
-                      required
-                      value={formData.city}
-                      onChange={handleInputChange('city')}
-                    />
-                    <FormInput
-                      label="State"
-                      required
-                      value={formData.state}
-                      onChange={handleInputChange('state')}
-                    />
-                  </Stack>
-                  <FormInput
-                    label="Pincode"
-                    required
-                    value={formData.pincode}
-                    onChange={handleInputChange('pincode')}
-                  />
-                </FormSection>
+                </Stack>
+                <FormInput
+                  label="Pincode"
+                  required
+                  value={formData.pincode}
+                  onChange={handleInputChange('pincode')}
+                />
+              </FormSection>
 
-                {/* Terms Agreement */}
+              {/* Terms Agreement */}
+              <FormCheckbox
+                label={
+                  <span>
+                    I agree to the{' '}
+                    <Link href="#/legal" sx={{ color: '#90caf9' }}>
+                      Terms of Service
+                    </Link>
+                  </span>
+                }
+                checked={formData.agreeToTerms}
+                onChange={handleCheckboxChange('agreeToTerms')}
+              />
+
+              {/* Next Button */}
+              <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                <Button
+                  variant="contained"
+                  endIcon={<ArrowForwardIcon />}
+                  onClick={handleNext}
+                  disabled={!formData.agreeToTerms}
+                  sx={{
+                    borderRadius: '16px',
+                    bgcolor: 'rgba(255,255,255,0.9)',
+                    color: '#000',
+                    '&:hover': {
+                      bgcolor: '#fff',
+                    },
+                    '&:disabled': {
+                      bgcolor: 'rgba(255,255,255,0.3)',
+                      color: 'rgba(0,0,0,0.4)',
+                    },
+                  }}
+                >
+                  Next
+                </Button>
+              </Box>
+            </>
+          )}
+
+          {step === 2 && (
+            <>
+              {/* Payment Details */}
+              <FormSection title="Payment Details" icon={<AttachMoneyIcon />}>
+                <FormInput
+                  label="Amount Willing to Pay (min. $30 USD)"
+                  required
+                  type="number"
+                  value={formData.amount}
+                  onChange={handleInputChange('amount')}
+                  inputProps={{ min: 30, step: 1 }}
+                />
                 <FormCheckbox
-                  label={
-                    <span>
-                      I agree to the{' '}
-                      <Link href="#/legal" sx={{ color: '#90caf9' }}>
-                        Terms of Service
-                      </Link>
-                    </span>
-                  }
-                  checked={formData.agreeToTerms}
-                  onChange={handleCheckboxChange('agreeToTerms')}
+                  label="Add Scam Insurance Policy (+$5 USD)"
+                  checked={formData.scamInsurance}
+                  onChange={handleCheckboxChange('scamInsurance')}
                 />
 
-                {/* Next Button */}
-                <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-                  <Button
-                    variant="contained"
-                    endIcon={<ArrowForwardIcon />}
-                    onClick={handleNext}
-                    disabled={!formData.agreeToTerms}
-                    sx={{
-                      borderRadius: '16px',
-                      bgcolor: 'rgba(255,255,255,0.9)',
-                      color: '#000',
-                      '&:hover': {
-                        bgcolor: '#fff',
-                      },
-                      '&:disabled': {
-                        bgcolor: 'rgba(255,255,255,0.3)',
-                        color: 'rgba(0,0,0,0.4)',
-                      },
-                    }}
-                  >
-                    Next
-                  </Button>
+                {/* Price Breakdown */}
+                <Box
+                  sx={{
+                    bgcolor: 'rgba(255,255,255,0.08)',
+                    p: 3,
+                    borderRadius: '16px',
+                    mt: 3,
+                  }}
+                >
+                  <Typography variant="h6" sx={{ color: '#fff', mb: 2 }}>
+                    Price Breakdown
+                  </Typography>
+                  <Stack spacing={1.5}>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <Typography sx={{ color: 'rgba(255,255,255,0.85)' }}>
+                        Amount Offered:
+                      </Typography>
+                      <Typography sx={{ color: '#fff', fontWeight: 600 }}>
+                        ${totals.baseAmount.toFixed(2)}
+                      </Typography>
+                    </Box>
+                    {formData.scamInsurance && (
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <Typography sx={{ color: 'rgba(255,255,255,0.85)' }}>
+                          Scam Insurance Policy:
+                        </Typography>
+                        <Typography sx={{ color: '#fff', fontWeight: 600 }}>
+                          +${totals.insurance.toFixed(2)}
+                        </Typography>
+                      </Box>
+                    )}
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <Typography sx={{ color: 'rgba(255,255,255,0.85)' }}>
+                        Platform Fee:
+                      </Typography>
+                      <Typography sx={{ color: '#fff', fontWeight: 600 }}>
+                        +${totals.platformFee.toFixed(2)}
+                      </Typography>
+                    </Box>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <Typography sx={{ color: 'rgba(255,255,255,0.85)' }}>
+                        GST & Tax (18%):
+                      </Typography>
+                      <Typography sx={{ color: '#fff', fontWeight: 600 }}>
+                        +${totals.tax.toFixed(2)}
+                      </Typography>
+                    </Box>
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        pt: 2,
+                        borderTop: '1px solid rgba(255,255,255,0.3)',
+                      }}
+                    >
+                      <Typography sx={{ color: '#fff', fontWeight: 700, fontSize: '1.2rem' }}>
+                        Total:
+                      </Typography>
+                      <Typography sx={{ color: '#fff', fontWeight: 700, fontSize: '1.2rem' }}>
+                        ${totals.total.toFixed(2)} USD
+                      </Typography>
+                    </Box>
+                  </Stack>
                 </Box>
-              </>
-            )}
+              </FormSection>
 
-            {step === 2 && (
-              <>
-                {/* Payment Details */}
-                <FormSection title="Payment Details" icon={<AttachMoneyIcon />}>
-                  <FormInput
-                    label="Amount Willing to Pay (min. $30 USD)"
-                    required
-                    type="number"
-                    value={formData.amount}
-                    onChange={handleInputChange('amount')}
-                    inputProps={{ min: 30, step: 1 }}
-                  />
-                  <FormCheckbox
-                    label="Add Scam Insurance Policy (+$5 USD)"
-                    checked={formData.scamInsurance}
-                    onChange={handleCheckboxChange('scamInsurance')}
-                  />
-
-                  {/* Price Breakdown */}
-                  <Box
-                    sx={{
-                      bgcolor: 'rgba(255,255,255,0.08)',
-                      p: 3,
-                      borderRadius: '16px',
-                      mt: 3,
-                    }}
-                  >
-                    <Typography variant="h6" sx={{ color: '#fff', mb: 2 }}>
-                      Price Breakdown
-                    </Typography>
-                    <Stack spacing={1.5}>
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <Typography sx={{ color: 'rgba(255,255,255,0.85)' }}>
-                          Amount Offered:
-                        </Typography>
-                        <Typography sx={{ color: '#fff', fontWeight: 600 }}>
-                          ${totals.baseAmount.toFixed(2)}
-                        </Typography>
-                      </Box>
-                      {formData.scamInsurance && (
-                        <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                          <Typography sx={{ color: 'rgba(255,255,255,0.85)' }}>
-                            Scam Insurance Policy:
-                          </Typography>
-                          <Typography sx={{ color: '#fff', fontWeight: 600 }}>
-                            +${totals.insurance.toFixed(2)}
-                          </Typography>
-                        </Box>
-                      )}
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <Typography sx={{ color: 'rgba(255,255,255,0.85)' }}>
-                          Platform Fee:
-                        </Typography>
-                        <Typography sx={{ color: '#fff', fontWeight: 600 }}>
-                          +${totals.platformFee.toFixed(2)}
-                        </Typography>
-                      </Box>
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <Typography sx={{ color: 'rgba(255,255,255,0.85)' }}>
-                          GST & Tax (18%):
-                        </Typography>
-                        <Typography sx={{ color: '#fff', fontWeight: 600 }}>
-                          +${totals.tax.toFixed(2)}
-                        </Typography>
-                      </Box>
-                      <Box
-                        sx={{
-                          display: 'flex',
-                          justifyContent: 'space-between',
-                          pt: 2,
-                          borderTop: '1px solid rgba(255,255,255,0.3)',
-                        }}
-                      >
-                        <Typography sx={{ color: '#fff', fontWeight: 700, fontSize: '1.2rem' }}>
-                          Total:
-                        </Typography>
-                        <Typography sx={{ color: '#fff', fontWeight: 700, fontSize: '1.2rem' }}>
-                          ${totals.total.toFixed(2)} USD
-                        </Typography>
-                      </Box>
-                    </Stack>
-                  </Box>
-                </FormSection>
-
-                {/* Navigation Buttons */}
-                <Stack direction="row" justifyContent="space-between">
-                  <Button
-                    variant="outlined"
-                    startIcon={<ArrowBackIcon />}
-                    onClick={handleBack}
-                    sx={{
-                      borderRadius: '16px',
-                      color: '#fff',
-                      borderColor: 'rgba(255,255,255,0.5)',
-                      '&:hover': {
-                        borderColor: '#fff',
-                        bgcolor: 'rgba(255,255,255,0.05)',
-                      },
-                    }}
-                  >
-                    Back
-                  </Button>
-                  <Button
-                    variant="contained"
-                    onClick={handleSubmit}
-                    sx={{
-                      borderRadius: '16px',
-                      bgcolor: 'rgba(255,255,255,0.9)',
-                      color: '#000',
-                      '&:hover': {
-                        bgcolor: '#fff',
-                      },
-                    }}
-                  >
-                    Submit
-                  </Button>
-                </Stack>
-              </>
-            )}
-          </Box>
+              {/* Navigation Buttons */}
+              <Stack direction="row" justifyContent="space-between">
+                <Button
+                  variant="outlined"
+                  startIcon={<ArrowBackIcon />}
+                  onClick={handleBack}
+                  disabled={isSubmitting}
+                  sx={{
+                    borderRadius: '16px',
+                    color: '#fff',
+                    borderColor: 'rgba(255,255,255,0.5)',
+                    '&:hover': {
+                      borderColor: '#fff',
+                      bgcolor: 'rgba(255,255,255,0.05)',
+                    },
+                    '&:disabled': {
+                      borderColor: 'rgba(255,255,255,0.3)',
+                      color: 'rgba(255,255,255,0.3)',
+                    },
+                  }}
+                >
+                  Back
+                </Button>
+                <Button
+                  variant="contained"
+                  onClick={handleSubmit}
+                  disabled={isSubmitting}
+                  sx={{
+                    borderRadius: '16px',
+                    bgcolor: 'rgba(255,255,255,0.9)',
+                    color: '#000',
+                    '&:hover': {
+                      bgcolor: '#fff',
+                    },
+                    '&:disabled': {
+                      bgcolor: 'rgba(255,255,255,0.3)',
+                      color: 'rgba(0,0,0,0.4)',
+                    },
+                  }}
+                >
+                  {isSubmitting ? (
+                    <>
+                      <CircularProgress size={20} sx={{ mr: 1, color: '#000' }} />
+                      Submitting...
+                    </>
+                  ) : (
+                    'Submit'
+                  )}
+                </Button>
+              </Stack>
+            </>
+          )}
+        </Box>
       </Paper>
     </Box>
   );
