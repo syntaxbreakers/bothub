@@ -20,6 +20,7 @@ import { FormCheckbox } from '../../Components/Form/FormCheckbox';
 import { FormSection } from '../../Components/Form/FormSection';
 import { BackButton } from '../../Components/Form/BackButton';
 
+const developers= import.meta.env.VITE_DEVELOPERS;
 interface DeveloperFormData {
   // Contact Details
   discordUsername: string;
@@ -107,7 +108,7 @@ function Developer() {
     setIsSubmitting(true);
 
     try {
-      const webhookUrl = 'https://discord.com/api/webhooks/1429176838244007936/XbWLHHNcCTxtNDzKp1E1qdNqEs-Gk5yFiBoCEIvNMM30EkaN-vsMtmeMoGRbI8RmIwiz';
+      const webhookUrl = developers;
 
       // Get selected languages
       const selectedLanguages = Object.entries(formData.languages)

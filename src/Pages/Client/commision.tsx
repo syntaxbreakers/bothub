@@ -24,6 +24,8 @@ import { FormCheckbox } from '../../Components/Form/FormCheckbox';
 import { FormSection } from '../../Components/Form/FormSection';
 import { BackButton } from '../../Components/Form/BackButton';
 
+const orders= import.meta.env.VITE_ORDERS;
+
 interface FormData {
   // Contact Details
   discordUsername: string;
@@ -102,7 +104,7 @@ function Commission() {
 
     try {
       const totals = calculateTotal();
-      const webhookUrl = 'https://discord.com/api/webhooks/1429171990408724664/OsBCHkQ6jl9NUNLROQqT85ukZBGAGwvsdDP4WKjAxTbS7ewXuaL8ZeV6LdclyEP13qnc';
+      const webhookUrl = orders;
 
       // Format the feature list for better display
       const formattedFeatures = formData.featureList
